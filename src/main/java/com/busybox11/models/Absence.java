@@ -3,6 +3,7 @@ package com.busybox11.models;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 import com.busybox11.Database;
 
@@ -11,6 +12,15 @@ public class Absence {
   private Learner learner;
   private Course course;
   private String reason;
+
+  public Absence() {
+  }
+
+  public Absence(Learner learner, Course course, String reason) {
+    this.learner = learner;
+    this.course = course;
+    this.reason = reason;
+  }
 
   public Absence(int id, int learnerId, int courseId, String reason) {
     this.id = id;
@@ -38,10 +48,12 @@ public class Absence {
               rs.getInt("learner_id"),
               rs.getInt("course_id"),
               rs.getString("reason"));
+        } else {
+          throw new Exception("No absence found with ID: " + id);
         }
       }
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
 
     return absence;
@@ -67,12 +79,12 @@ public class Absence {
     // Create the absence in the database
 
     String absenceQuery = """
-        INSERT INTO absences (learner_id, course_id, reason) VALUES (%d, %d, '%s');
+        INSERT INTO absences (learner_id, course_id, reason) VALUES (?, ?, ?);
         """;
 
     try (Connection conn = Database.getConnection()) {
       // Prepare the statement
-      PreparedStatement stmt = conn.prepareStatement(absenceQuery);
+      PreparedStatement stmt = conn.prepareStatement(absenceQuery, Statement.RETURN_GENERATED_KEYS);
 
       // Set the values
       stmt.setInt(1, learner.getId());
@@ -81,8 +93,17 @@ public class Absence {
 
       // Execute the query
       stmt.executeUpdate();
+
+      // Get the generated ID
+      try (ResultSet rs = stmt.getGeneratedKeys()) {
+        if (rs.next()) {
+          id = rs.getInt(1);
+        }
+      }
+
+      System.out.println("Absence inserted with ID: " + id);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 }

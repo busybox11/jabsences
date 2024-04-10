@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Database {
-  private static void resetTables() {
+  public static void resetTables() {
     String[] tables = { "promotions", "learners", "courses", "absences" };
 
     try (Connection conn = Database.connect()) {
@@ -15,7 +15,7 @@ public class Database {
 
       System.out.println("Tables reset.");
     } catch (SQLException e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 
@@ -69,7 +69,7 @@ public class Database {
 
       System.out.println("Tables initialized.");
     } catch (SQLException e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 
@@ -90,7 +90,7 @@ public class Database {
 
       System.out.println("Connection to SQLite has been established.");
     } catch (SQLException e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
 
     return conn;
@@ -100,8 +100,12 @@ public class Database {
     return connect();
   }
 
+  public static void resetAndInitializeTables() {
+    resetTables();
+    initializeTables();
+  }
+
   public static void main(String[] args) {
-    Database.resetTables();
-    Database.initializeTables();
+    resetAndInitializeTables();
   }
 }

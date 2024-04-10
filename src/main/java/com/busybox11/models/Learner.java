@@ -3,6 +3,9 @@ package com.busybox11.models;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.busybox11.Database;
 
@@ -15,6 +18,20 @@ public class Learner {
   private String email;
   private String phone;
   private boolean isRepresentative;
+
+  public Learner() {
+  }
+
+  public Learner(String name, String surname, Promotion promotion, String address, String email, String phone,
+      boolean isRepresentative) {
+    this.name = name;
+    this.surname = surname;
+    this.promotion = promotion;
+    this.address = address;
+    this.email = email;
+    this.phone = phone;
+    this.isRepresentative = isRepresentative;
+  }
 
   public Learner(int id, String name, String surname, int promotionId, String address, String email, String phone,
       boolean isRepresentative) {
@@ -51,13 +68,43 @@ public class Learner {
               rs.getString("email"),
               rs.getString("phone"),
               rs.getBoolean("isRepresentative"));
+        } else {
+          throw new Exception("No learner found with ID: " + id);
         }
       }
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
 
     return learner;
+  }
+
+  public static List<Learner> getAllLearners() {
+    // Retrieve all learners from the database
+
+    List<Learner> learners = new ArrayList<>();
+
+    String learnersQuery = "SELECT * FROM learners";
+
+    try (Connection conn = Database.getConnection()) {
+      try (ResultSet rs = conn.createStatement().executeQuery(learnersQuery)) {
+        while (rs.next()) {
+          learners.add(new Learner(
+              rs.getInt("id"),
+              rs.getString("name"),
+              rs.getString("surname"),
+              rs.getInt("promotionId"),
+              rs.getString("address"),
+              rs.getString("email"),
+              rs.getString("phone"),
+              rs.getBoolean("isRepresentative")));
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return learners;
   }
 
   public int getId() {
@@ -115,18 +162,18 @@ public class Learner {
         }
       }
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
 
     // Create the learner
     String learnerQuery = """
         INSERT INTO learners (name, surname, promotion_id, address, email, phone, isRepresentative)
-        VALUES ('%s', '%s', %d, '%s', '%s', '%s', %d);
+        VALUES (?, ?, ?, ?, ?, ?, ?);
         """;
 
     try (Connection conn = Database.getConnection()) {
       // Prepare the statement
-      PreparedStatement stmt = conn.prepareStatement(learnerQuery);
+      PreparedStatement stmt = conn.prepareStatement(learnerQuery, Statement.RETURN_GENERATED_KEYS);
 
       // Execute the query
       stmt.setString(1, name);
@@ -139,9 +186,16 @@ public class Learner {
 
       stmt.executeUpdate();
 
-      System.out.println("Learner created.");
+      // Get the generated ID
+      try (ResultSet rs = stmt.getGeneratedKeys()) {
+        if (rs.next()) {
+          id = rs.getInt(1);
+        }
+      }
+
+      System.out.println("Learner inserted with ID: " + id);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
   }
 }
