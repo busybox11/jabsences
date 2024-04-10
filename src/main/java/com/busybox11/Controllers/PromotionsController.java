@@ -28,6 +28,16 @@ public class PromotionsController {
             + learner.getAbsent() + " absences");
       }
 
+      // Show the mean of all absences
+      int totalAbsences = 0;
+      int totalLearners = learners.size();
+
+      for (Learner learner : learners) {
+        totalAbsences += learner.getAbsent();
+      }
+
+      System.out.println("\nMoyenne d'absences : " + (totalAbsences / totalLearners));
+
       System.out.println("\n-----------\n");
 
       System.out.println("0. Retour");
@@ -59,6 +69,8 @@ public class PromotionsController {
       for (Promotion promotion : promotions) {
         System.out.println(promotion.getId() + ". " + promotion.getName());
       }
+
+      System.out.println("\n-----------\n");
 
       System.out.println("\n0. Retour");
 
@@ -102,7 +114,7 @@ public class PromotionsController {
 
       System.out.println("\n-----------\n");
 
-      System.out.println("1. Choisir une promotion");
+      System.out.println("1. Afficher une promotion");
       System.out.println("2. Créer une promotion");
       System.out.println("3. Chercher une promotion");
       System.out.println("\n0. Retour");
