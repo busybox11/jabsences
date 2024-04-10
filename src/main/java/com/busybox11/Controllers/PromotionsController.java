@@ -113,6 +113,44 @@ public class PromotionsController {
     return;
   }
 
+  public void searchPromotionMenu() {
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
+
+    System.out.println("Rechercher une promotion");
+
+    System.out.println("\n-----------\n");
+
+    try {
+      System.out.print("Nom : ");
+      String name = System.console().readLine();
+
+      List<Promotion> promotion = Promotion.searchWithName(name);
+
+      if (promotion == null) {
+        System.out.println("Promotion non trouvée");
+        System.out.print("\nAppuyez sur Entrée pour continuer...");
+
+        System.console().readLine();
+
+        return;
+      }
+
+      for (Promotion p : promotion) {
+        System.out.println(p.getId() + ". " + p.getName());
+      }
+    } catch (Exception e) {
+      System.out.println("Erreur lors de la recherche de la promotion");
+      System.out.println(e.getMessage());
+    }
+
+    System.out.print("\nAppuyez sur Entrée pour continuer...");
+
+    System.console().readLine();
+
+    return;
+  }
+
   public void mainMenu() {
     while (true) {
       System.out.print("\033[H\033[2J");
@@ -138,6 +176,7 @@ public class PromotionsController {
           createPromotionMenu();
           break;
         case 3:
+          searchPromotionMenu();
           break;
         case 0:
           return;

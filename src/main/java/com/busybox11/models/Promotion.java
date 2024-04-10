@@ -99,6 +99,32 @@ public class Promotion {
     return learners;
   }
 
+  public static List<Promotion> searchWithName(String name) {
+    // Search for learners with a specific name in this promotion
+
+    List<Promotion> promotion = new ArrayList<>();
+
+    String promotionsQuery = "SELECT * FROM promotions WHERE name LIKE ?";
+
+    try (Connection conn = Database.getConnection()) {
+      PreparedStatement stmt = conn.prepareStatement(promotionsQuery);
+
+      stmt.setString(2, "%" + name + "%");
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          promotion.add(new Promotion(
+              rs.getInt("id"),
+              rs.getString("name")));
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return promotion;
+  }
+
   public int getId() {
     return id;
   }
