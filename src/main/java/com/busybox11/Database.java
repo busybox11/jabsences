@@ -5,17 +5,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Database {
-  public static void resetTables() {
-    String[] tables = { "promotions", "learners", "courses", "absences" };
+  public static void deleteDB() {
+    // Delete the database file
+    String path = System.getProperty("user.home") + "/jabsences/jabsences.db";
 
-    try (Connection conn = Database.connect()) {
-      for (String table : tables) {
-        conn.createStatement().execute("DROP TABLE IF EXISTS " + table);
-      }
+    java.io.File db = new java.io.File(path);
 
-      System.out.println("Tables reset.");
-    } catch (SQLException e) {
-      e.printStackTrace();
+    if (db.delete()) {
+      System.out.println("Database deleted.");
+    } else {
+      System.out.println("Failed to delete the database.");
     }
   }
 
@@ -37,30 +36,12 @@ public class Database {
             email TEXT NOT NULL,
             phone TEXT NOT NULL,
             isRepresentative INTEGER NOT NULL,
+            absent INTEGER DEFAULT 0,
             FOREIGN KEY (promotion_id) REFERENCES promotions(id)
           );
         """;
 
-    String coursesTable = """
-          CREATE TABLE IF NOT EXISTS courses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            date INT NOT NULL
-          );
-        """;
-
-    String absencesTable = """
-          CREATE TABLE IF NOT EXISTS absences (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            learner_id INTEGER NOT NULL,
-            course_id INTEGER NOT NULL,
-            reason TEXT,
-            FOREIGN KEY (learner_id) REFERENCES learners(id),
-            FOREIGN KEY (course_id) REFERENCES courses(id)
-          );
-        """;
-
-    String[] tables = { promotionTable, learnersTable, coursesTable, absencesTable };
+    String[] tables = { promotionTable, learnersTable };
 
     try (Connection conn = Database.connect()) {
       for (String table : tables) {
@@ -101,7 +82,7 @@ public class Database {
   }
 
   public static void resetAndInitializeTables() {
-    resetTables();
+    deleteDB();
     initializeTables();
   }
 

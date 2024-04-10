@@ -17,12 +17,14 @@ public class Learner {
   private String address;
   private String email;
   private String phone;
+  private int absent;
   private boolean isRepresentative;
 
   public Learner() {
   }
 
   public Learner(String name, String surname, Promotion promotion, String address, String email, String phone,
+      int absent,
       boolean isRepresentative) {
     this.name = name;
     this.surname = surname;
@@ -30,18 +32,25 @@ public class Learner {
     this.address = address;
     this.email = email;
     this.phone = phone;
+    this.absent = absent;
     this.isRepresentative = isRepresentative;
   }
 
   public Learner(int id, String name, String surname, int promotionId, String address, String email, String phone,
+      int absent,
       boolean isRepresentative) {
     this.id = id;
     this.name = name;
     this.surname = surname;
-    this.promotion = Promotion.initializeFromDb(promotionId);
+    try {
+      this.promotion = Promotion.initializeFromDb(promotionId);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     this.address = address;
     this.email = email;
     this.phone = phone;
+    this.absent = absent;
     this.isRepresentative = isRepresentative;
   }
 
@@ -67,6 +76,7 @@ public class Learner {
               rs.getString("address"),
               rs.getString("email"),
               rs.getString("phone"),
+              rs.getInt("absent"),
               rs.getBoolean("isRepresentative"));
         } else {
           throw new Exception("No learner found with ID: " + id);
@@ -97,6 +107,7 @@ public class Learner {
               rs.getString("address"),
               rs.getString("email"),
               rs.getString("phone"),
+              rs.getInt("absent"),
               rs.getBoolean("isRepresentative")));
         }
       }
@@ -135,6 +146,10 @@ public class Learner {
     return phone;
   }
 
+  public int getAbsent() {
+    return absent;
+  }
+
   public boolean isRepresentative() {
     return isRepresentative;
   }
@@ -167,8 +182,8 @@ public class Learner {
 
     // Create the learner
     String learnerQuery = """
-        INSERT INTO learners (name, surname, promotion_id, address, email, phone, isRepresentative)
-        VALUES (?, ?, ?, ?, ?, ?, ?);
+        INSERT INTO learners (name, surname, promotion_id, address, email, phone, absent, isRepresentative)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?);
         """;
 
     try (Connection conn = Database.getConnection()) {
@@ -182,7 +197,8 @@ public class Learner {
       stmt.setString(4, address);
       stmt.setString(5, email);
       stmt.setString(6, phone);
-      stmt.setInt(7, isRepresentative ? 1 : 0);
+      stmt.setInt(7, absent);
+      stmt.setInt(8, isRepresentative ? 1 : 0);
 
       stmt.executeUpdate();
 
