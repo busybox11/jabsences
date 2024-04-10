@@ -129,8 +129,47 @@ public class Promotion {
           id = rs.getInt(1);
         }
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-      System.out.println("Promotion inserted with ID: " + id);
+  public void updateInDB() {
+    // Update the promotion in the database
+
+    String promotionQuery = """
+        UPDATE promotions
+        SET name = ?
+        WHERE id = ?;
+        """;
+
+    try (Connection conn = Database.getConnection()) {
+      // Prepare the statement
+      PreparedStatement stmt = conn.prepareStatement(promotionQuery);
+
+      // Execute the query
+      stmt.setString(1, name);
+      stmt.setInt(2, id);
+
+      stmt.executeUpdate();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void deleteFromDB() {
+    // Delete the promotion from the database
+
+    String promotionQuery = "DELETE FROM promotions WHERE id = ?";
+
+    try (Connection conn = Database.getConnection()) {
+      // Prepare the statement
+      PreparedStatement stmt = conn.prepareStatement(promotionQuery);
+
+      // Execute the query
+      stmt.setInt(1, id);
+
+      stmt.executeUpdate();
     } catch (Exception e) {
       e.printStackTrace();
     }

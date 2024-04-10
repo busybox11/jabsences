@@ -154,6 +154,10 @@ public class Learner {
     return isRepresentative;
   }
 
+  public void setAbsent(int absent) {
+    this.absent = absent;
+  }
+
   public void insertIntoDB() {
     // Create the learner in the database
 
@@ -208,8 +212,54 @@ public class Learner {
           id = rs.getInt(1);
         }
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
-      System.out.println("Learner inserted with ID: " + id);
+  public void updateInDB() {
+    // Update the learner in the database
+
+    String learnerQuery = """
+        UPDATE learners
+        SET name = ?, surname = ?, promotion_id = ?, address = ?, email = ?, phone = ?, absent = ?, isRepresentative = ?
+        WHERE id = ?;
+        """;
+
+    try (Connection conn = Database.getConnection()) {
+      // Prepare the statement
+      PreparedStatement stmt = conn.prepareStatement(learnerQuery);
+
+      // Execute the query
+      stmt.setString(1, name);
+      stmt.setString(2, surname);
+      stmt.setInt(3, promotion.getId());
+      stmt.setString(4, address);
+      stmt.setString(5, email);
+      stmt.setString(6, phone);
+      stmt.setInt(7, absent);
+      stmt.setInt(8, isRepresentative ? 1 : 0);
+      stmt.setInt(9, id);
+
+      stmt.executeUpdate();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void deleteFromDB() {
+    // Delete the learner from the database
+
+    String learnerQuery = "DELETE FROM learners WHERE id = ?";
+
+    try (Connection conn = Database.getConnection()) {
+      // Prepare the statement
+      PreparedStatement stmt = conn.prepareStatement(learnerQuery);
+
+      // Execute the query
+      stmt.setInt(1, id);
+
+      stmt.executeUpdate();
     } catch (Exception e) {
       e.printStackTrace();
     }
