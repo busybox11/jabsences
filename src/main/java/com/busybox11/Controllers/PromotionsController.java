@@ -86,23 +86,31 @@ public class PromotionsController {
   }
 
   public void createPromotionMenu() {
-    while (true) {
-      System.out.print("\033[H\033[2J");
-      System.out.flush();
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
 
-      System.out.println("Créer une promotion");
+    System.out.println("Créer une promotion");
 
-      System.out.println("\n-----------\n");
+    System.out.println("\n-----------\n");
 
-      System.out.print("Nom : ");
-      String name = System.console().readLine();
+    System.out.print("Nom : ");
+    String name = System.console().readLine();
 
+    try {
       Promotion promotion = new Promotion(name);
       promotion.insertIntoDB();
 
       System.out.println("Promotion créée");
-
+    } catch (Exception e) {
+      System.out.println("Erreur lors de la création de la promotion");
+      System.out.println(e.getMessage());
     }
+
+    System.out.print("\nAppuyez sur Entrée pour continuer...");
+
+    System.console().readLine();
+
+    return;
   }
 
   public void mainMenu() {
@@ -127,6 +135,7 @@ public class PromotionsController {
           choosePromotionMenu();
           break;
         case 2:
+          createPromotionMenu();
           break;
         case 3:
           break;

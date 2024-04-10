@@ -23,8 +23,12 @@ public class AppTest {
     // Insert
     Promotion promotion2 = new Promotion("Promotion 2");
 
-    promotion.insertIntoDB();
-    promotion2.insertIntoDB();
+    try {
+      promotion.insertIntoDB();
+      promotion2.insertIntoDB();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     assertEquals(1, promotion.getId());
     assertEquals(2, promotion2.getId());
 

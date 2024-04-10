@@ -107,8 +107,22 @@ public class Promotion {
     return name;
   }
 
-  public void insertIntoDB() {
+  public void insertIntoDB() throws Exception {
     // Create the promotion in the database
+
+    // Check that there isn't any other promotion with the same name
+    String checkQuery = "SELECT * FROM promotions WHERE name = ?";
+    try (Connection conn = Database.getConnection()) {
+      PreparedStatement stmt = conn.prepareStatement(checkQuery);
+
+      stmt.setString(1, name);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          throw new Exception("Une promotion avec le même nom existe déjà");
+        }
+      }
+    }
 
     String promotionQuery = """
         INSERT INTO promotions (name) VALUES (?);
@@ -129,8 +143,6 @@ public class Promotion {
           id = rs.getInt(1);
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
   }
 

@@ -19,8 +19,12 @@ public class CreatePromotionController {
     // Create a new promotion object
     Promotion promotion = new Promotion(name);
 
-    // Insert the promotion into the database
-    promotion.insertIntoDB();
+    try {
+      // Insert the promotion into the database
+      promotion.insertIntoDB();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     // Switch back to the primary view
     switchToPrimary();
