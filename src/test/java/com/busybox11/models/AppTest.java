@@ -76,5 +76,41 @@ public class AppTest {
 
     Learner dbLearner4 = Learner.initializeFromId(4);
     assertEquals(4, dbLearner4.getId());
+
+    // Try to create promotion with same name, expect error
+    Promotion promotion3 = new Promotion("Promotion 1");
+    Exception exception = assertThrows(Exception.class, () -> {
+      promotion3.insertIntoDB();
+    });
+
+    String expectedMessage = "Une promotion avec le même nom existe déjà";
+    String actualMessage = exception.getMessage();
+
+    assertTrue(actualMessage.contains(expectedMessage));
+
+    // Try to create learner with same name and surname, expect error
+    Learner learner5 = new Learner("Patrick", "Balkany", promotion, "92044 Levallois-Perret", "patrick@riches.club",
+        "01 47 15 47 15", 93, false);
+    Exception exception2 = assertThrows(Exception.class, () -> {
+      learner5.insertIntoDB();
+    });
+
+    String expectedMessage2 = "Vous ne pouvez pas créer un apprenant avec un nom et prénom déjà existant";
+    String actualMessage2 = exception2.getMessage();
+
+    assertTrue(actualMessage2.contains(expectedMessage2));
+
+    // Try to create learner with same email, expect error
+    Learner learner6 = new Learner("Jeanne", "Dupont", promotion2, "Rue de la Paix", "jdupont@gmail.com",
+        "0693947205",
+        2, false);
+    Exception exception3 = assertThrows(Exception.class, () -> {
+      learner6.insertIntoDB();
+    });
+
+    String expectedMessage3 = "Vous ne pouvez pas créer un apprenant avec un email déjà existant";
+    String actualMessage3 = exception3.getMessage();
+
+    assertTrue(actualMessage3.contains(expectedMessage3));
   }
 }
