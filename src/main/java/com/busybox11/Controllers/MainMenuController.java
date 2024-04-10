@@ -1,5 +1,9 @@
 package com.busybox11.Controllers;
 
+import java.util.List;
+
+import com.busybox11.models.Promotion;
+
 public class MainMenuController {
   public void mainMenu() {
     while (true) {
@@ -10,7 +14,15 @@ public class MainMenuController {
 
       System.out.println("\n-----------\n");
 
-      System.out.println("1. Menu des apprenants");
+      // Get list of promotions
+      // If there is at least one, show menu for learners
+      List<Promotion> promotions = Promotion.getAllPromotions();
+
+      if (promotions.size() > 0) {
+        System.out.println("1. Menu des apprenants");
+      } else {
+        System.out.println("1. Menu apprenant désactivé : aucune promotion n'a été créée");
+      }
       System.out.println("2. Menu des promotions");
       System.out.println("\n0. Quitter");
 
@@ -19,6 +31,9 @@ public class MainMenuController {
 
       switch (choice) {
         case 1:
+          if (promotions.size() == 0) {
+            break;
+          }
           LearnersController learnersController = new LearnersController();
           learnersController.mainMenu();
           break;
