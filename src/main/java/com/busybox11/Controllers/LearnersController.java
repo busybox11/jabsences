@@ -81,8 +81,16 @@ public class LearnersController {
       System.out.println(promotion.getId() + ". " + promotion.getName());
     }
 
-    System.out.print("\nChoix : ");
-    int promotionId = Integer.parseInt(System.console().readLine());
+    final int[] promotionId = new int[1];
+    while (true) {
+      System.out.print("\nChoix : ");
+      promotionId[0] = Integer.parseInt(System.console().readLine());
+      if (promotions.stream().anyMatch(p -> p.getId() == promotionId[0])) {
+        break;
+      } else {
+        System.out.println("Choix invalide");
+      }
+    }
 
     System.out.print("Adresse   : ");
     String address = System.console().readLine();
@@ -93,8 +101,26 @@ public class LearnersController {
     System.out.print("Téléphone : ");
     String phone = System.console().readLine();
 
+    System.out.println("Délégué ?");
+    System.out.println("1. Oui");
+    System.out.println("2. Non");
+    while (true) {
+      System.out.print("\nChoix : ");
+      int choice = Integer.parseInt(System.console().readLine());
+      if (choice == 1) {
+        break;
+      } else if (choice == 2) {
+        break;
+      } else {
+        System.out.println("Choix invalide");
+      }
+    }
+
+    System.out.print("Absences  : ");
+    int absent = Integer.parseInt(System.console().readLine());
+
     try {
-      Learner learner = new Learner(name, surname, promotionId, address, email, phone, 0, false);
+      Learner learner = new Learner(name, surname, promotionId[0], address, email, phone, absent, false);
       learner.insertIntoDB();
     } catch (Exception e) {
       System.out.println("Erreur lors de l'ajout de l'apprenant");

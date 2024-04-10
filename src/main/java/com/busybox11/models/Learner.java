@@ -199,8 +199,6 @@ public class Learner {
           }
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
     }
 
     // Create the learner
