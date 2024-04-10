@@ -75,6 +75,30 @@ public class Promotion {
     return promotions;
   }
 
+  public List<Learner> getAllLearners() {
+    // Retrieve all learners for this promotion
+
+    List<Learner> learners = new ArrayList<>();
+
+    String learnersQuery = "SELECT id FROM learners WHERE promotion_id = ?";
+
+    try (Connection conn = Database.getConnection()) {
+      PreparedStatement stmt = conn.prepareStatement(learnersQuery);
+
+      stmt.setInt(1, id);
+
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          learners.add(Learner.initializeFromId(rs.getInt("id")));
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    return learners;
+  }
+
   public int getId() {
     return id;
   }
