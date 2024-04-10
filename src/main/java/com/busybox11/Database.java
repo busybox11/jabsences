@@ -5,103 +5,103 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Database {
-    private static void resetTables() {
-        String[] tables = {"promotions", "learners", "courses", "absences"};
+  private static void resetTables() {
+    String[] tables = { "promotions", "learners", "courses", "absences" };
 
-        try (Connection conn = Database.connect()) {
-            for (String table : tables) {
-                conn.createStatement().execute("DROP TABLE IF EXISTS " + table);
-            }
+    try (Connection conn = Database.connect()) {
+      for (String table : tables) {
+        conn.createStatement().execute("DROP TABLE IF EXISTS " + table);
+      }
 
-            System.out.println("Tables reset.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+      System.out.println("Tables reset.");
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
     }
+  }
 
-    private static void initializeTables() {
-        String promotionTable = """
-            CREATE TABLE IF NOT EXISTS promotions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL
-            );
+  private static void initializeTables() {
+    String promotionTable = """
+          CREATE TABLE IF NOT EXISTS promotions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL
+          );
         """;
 
-        String learnersTable = """
-            CREATE TABLE IF NOT EXISTS learners (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                surname TEXT NOT NULL,
-                promotion_id INTEGER NOT NULL,
-                address TEXT NOT NULL,
-                email TEXT NOT NULL,
-                phone TEXT NOT NULL,
-                isRepresentative INTEGER NOT NULL,
-                FOREIGN KEY (promotion_id) REFERENCES promotions(id)
-            );
+    String learnersTable = """
+          CREATE TABLE IF NOT EXISTS learners (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            surname TEXT NOT NULL,
+            promotion_id INTEGER NOT NULL,
+            address TEXT NOT NULL,
+            email TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            isRepresentative INTEGER NOT NULL,
+            FOREIGN KEY (promotion_id) REFERENCES promotions(id)
+          );
         """;
 
-        String coursesTable = """
-            CREATE TABLE IF NOT EXISTS courses (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                date TEXT NOT NULL
-            );
+    String coursesTable = """
+          CREATE TABLE IF NOT EXISTS courses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            date INT NOT NULL
+          );
         """;
 
-        String absencesTable = """
-            CREATE TABLE IF NOT EXISTS absences (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                learner_id INTEGER NOT NULL,
-                course_id INTEGER NOT NULL,
-                reason TEXT,
-                FOREIGN KEY (learner_id) REFERENCES learners(id),
-                FOREIGN KEY (course_id) REFERENCES courses(id)
-            );
+    String absencesTable = """
+          CREATE TABLE IF NOT EXISTS absences (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            learner_id INTEGER NOT NULL,
+            course_id INTEGER NOT NULL,
+            reason TEXT,
+            FOREIGN KEY (learner_id) REFERENCES learners(id),
+            FOREIGN KEY (course_id) REFERENCES courses(id)
+          );
         """;
 
-        String[] tables = {promotionTable, learnersTable, coursesTable, absencesTable};
+    String[] tables = { promotionTable, learnersTable, coursesTable, absencesTable };
 
-        try (Connection conn = Database.connect()) {
-            for (String table : tables) {
-                conn.createStatement().execute(table);
-            }
+    try (Connection conn = Database.connect()) {
+      for (String table : tables) {
+        conn.createStatement().execute(table);
+      }
 
-            System.out.println("Tables initialized.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+      System.out.println("Tables initialized.");
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  private static Connection connect() {
+    Connection conn = null;
+    try {
+      String path = System.getProperty("user.home") + "/jabsences";
+
+      // Create the directory if it doesn't exist
+      java.io.File dir = new java.io.File(path);
+      dir.mkdir();
+
+      // DB connection string
+      String url = "jdbc:sqlite:" + path + "/jabsences.db";
+
+      // Create a connection to the database
+      conn = DriverManager.getConnection(url);
+
+      System.out.println("Connection to SQLite has been established.");
+    } catch (SQLException e) {
+      System.out.println(e.getMessage());
     }
 
-    private static Connection connect() {
-        Connection conn = null;
-        try {
-            String path = System.getProperty("user.home") + "/jabsences";
+    return conn;
+  }
 
-            // Create the directory if it doesn't exist
-            java.io.File dir = new java.io.File(path);
-            dir.mkdir();
+  public static Connection getConnection() {
+    return connect();
+  }
 
-            // DB connection string
-            String url = "jdbc:sqlite:" + path + "/jabsences.db";
-
-            // Create a connection to the database
-            conn = DriverManager.getConnection(url);
-
-            System.out.println("Connection to SQLite has been established.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-
-        return conn;
-    }
-
-    public static Connection getConnection() {
-        return connect();
-    }
-
-    public static void main(String[] args) {
-        Database.resetTables();
-        Database.initializeTables();
-    }
+  public static void main(String[] args) {
+    Database.resetTables();
+    Database.initializeTables();
+  }
 }
