@@ -36,6 +36,23 @@ public class Learner {
     this.isRepresentative = isRepresentative;
   }
 
+  public Learner(String name, String surname, int promotionId, String address, String email, String phone,
+      int absent,
+      boolean isRepresentative) {
+    this.name = name;
+    this.surname = surname;
+    try {
+      this.promotion = Promotion.initializeFromDb(promotionId);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    this.address = address;
+    this.email = email;
+    this.phone = phone;
+    this.absent = absent;
+    this.isRepresentative = isRepresentative;
+  }
+
   public Learner(int id, String name, String surname, int promotionId, String address, String email, String phone,
       int absent,
       boolean isRepresentative) {
@@ -158,7 +175,7 @@ public class Learner {
     this.absent = absent;
   }
 
-  public void insertIntoDB() {
+  public void insertIntoDB() throws Exception {
     // Create the learner in the database
 
     // Check that there isn't any other learner with the same name and surname, or
@@ -172,12 +189,14 @@ public class Learner {
       stmt.setString(3, email);
 
       try (ResultSet rs = stmt.executeQuery()) {
-        // Check if both name and surname OR email are already in the database
-        // A result doesn't mean that the learner already exists
-        if (rs.getString("name").equals(name) && rs.getString("surname").equals(surname)
-            || rs.getString("email").equals(email)) {
-          System.out.println("A learner with the same name and surname or email already exists.");
-          return;
+        while (rs.next()) {
+          // Check if both name and surname OR email are already in the database
+          // A result doesn't mean that the learner already exists
+          if (rs.getString("name").equals(name) && rs.getString("surname").equals(surname)) {
+            throw new Exception("Vous ne pouvez pas créer un apprenant avec un nom et prénom déjà existant");
+          } else if (rs.getString("email").equals(email)) {
+            throw new Exception("Vous ne pouvez pas créer un apprenant avec un email déjà existant");
+          }
         }
       }
     } catch (Exception e) {

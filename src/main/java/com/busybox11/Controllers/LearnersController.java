@@ -3,6 +3,7 @@ package com.busybox11.Controllers;
 import java.util.List;
 
 import com.busybox11.models.Learner;
+import com.busybox11.models.Promotion;
 
 public class LearnersController {
   public void learnerMenu(int id) {
@@ -59,6 +60,57 @@ public class LearnersController {
           break;
       }
     }
+  }
+
+  public void addLearnerMenu() {
+    System.out.print("\033[H\033[2J");
+    System.out.flush();
+
+    System.out.println("Ajouter un apprenant");
+    System.out.println("\n-----------\n");
+
+    System.out.print("Nom       : ");
+    String name = System.console().readLine();
+
+    System.out.print("Prénom    : ");
+    String surname = System.console().readLine();
+
+    List<Promotion> promotions = Promotion.getAllPromotions();
+    System.out.println("Promotion : ");
+    for (Promotion promotion : promotions) {
+      System.out.println(promotion.getId() + ". " + promotion.getName());
+    }
+
+    System.out.print("\nChoix : ");
+    int promotionId = Integer.parseInt(System.console().readLine());
+
+    System.out.print("Adresse   : ");
+    String address = System.console().readLine();
+
+    System.out.print("Email     : ");
+    String email = System.console().readLine();
+
+    System.out.print("Téléphone : ");
+    String phone = System.console().readLine();
+
+    try {
+      Learner learner = new Learner(name, surname, promotionId, address, email, phone, 0, false);
+      learner.insertIntoDB();
+    } catch (Exception e) {
+      System.out.println("Erreur lors de l'ajout de l'apprenant");
+      System.out.println(e.getMessage());
+      System.out.print("\nAppuyez sur Entrée pour continuer...");
+      System.console().readLine();
+      return;
+    }
+
+    System.out.println("\nApprenant ajouté avec succès");
+
+    System.out.print("\nAppuyez sur Entrée pour continuer...");
+
+    System.console().readLine();
+
+    return;
   }
 
   private void chooseLearnerMenu() {
@@ -149,6 +201,9 @@ public class LearnersController {
           break;
         case 3:
           sortLearnersMenu(true);
+          break;
+        case 4:
+          addLearnerMenu();
           break;
         case 0:
           return;

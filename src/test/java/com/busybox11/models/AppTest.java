@@ -51,10 +51,14 @@ public class AppTest {
         "01 23 45 67 89", 0, true);
 
     // Insert learners
-    learner1.insertIntoDB();
-    learner2.insertIntoDB();
-    learner3.insertIntoDB();
-    learner4.insertIntoDB();
+    try {
+      learner1.insertIntoDB();
+      learner2.insertIntoDB();
+      learner3.insertIntoDB();
+      learner4.insertIntoDB();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
 
     // Retrieve learners
     Learner dbLearner1 = Learner.initializeFromId(1);
