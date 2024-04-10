@@ -5,17 +5,39 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Database {
+    private static void resetTables() {
+        String[] tables = {"promotions", "learners", "courses", "absences"};
+
+        try (Connection conn = Database.connect()) {
+            for (String table : tables) {
+                conn.createStatement().execute("DROP TABLE IF EXISTS " + table);
+            }
+
+            System.out.println("Tables reset.");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     private static void initializeTables() {
+        String promotionTable = """
+            CREATE TABLE IF NOT EXISTS promotions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL
+            );
+        """;
+
         String learnersTable = """
             CREATE TABLE IF NOT EXISTS learners (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 surname TEXT NOT NULL,
-                promotion TEXT NOT NULL,
+                promotion_id INTEGER NOT NULL,
                 address TEXT NOT NULL,
                 email TEXT NOT NULL,
                 phone TEXT NOT NULL,
-                isRepresentative INTEGER NOT NULL
+                isRepresentative INTEGER NOT NULL,
+                FOREIGN KEY (promotion_id) REFERENCES promotions(id)
             );
         """;
 
@@ -38,7 +60,7 @@ public class Database {
             );
         """;
 
-        String[] tables = {learnersTable, coursesTable, absencesTable};
+        String[] tables = {promotionTable, learnersTable, coursesTable, absencesTable};
 
         try (Connection conn = Database.connect()) {
             for (String table : tables) {
@@ -74,7 +96,12 @@ public class Database {
         return conn;
     }
 
+    public static Connection getConnection() {
+        return connect();
+    }
+
     public static void main(String[] args) {
+        Database.resetTables();
         Database.initializeTables();
     }
 }
